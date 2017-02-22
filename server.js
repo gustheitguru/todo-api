@@ -1,5 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var _ = require('underscore');
+
 var app = express();
 var PORT = process.env.PORT || 3000
 var todos = [];
@@ -22,13 +24,16 @@ app.get('/todo', function (req, res){
 
 app.get('/todo/:id', function (req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var matchedTodo;
 
-	todos.forEach(function (todo) {
-		if (todoId === todo.id) {
-			matchedTodo = todo;
-		}
-	});
+	var matchedTodo = _.findWhere(todos, {id: todoId});
+	//this code down here does the same thing as the line above
+	// var matchedTodo;
+
+	// todos.forEach(function (todo) {
+	// 	if (todoId === todo.id) {
+	// 		matchedTodo = todo;
+	// 	}
+	// });
 
 	if (matchedTodo) {
 		res.json(matchedTodo);
@@ -47,13 +52,19 @@ app.get('/todo/:id', function (req, res) {
 //POST /todo
 app.post('/todo', function (req, res){
 	var body = req.body
+	
+	if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+		return res.status(400).send();
+	}
+
+	
 	//add ID field - set this to ID and add one each time
 	body.id = todoNextID++;
 
 	//push body into array
 	todos.push(body);
 	res.json(body);
-		
+
 	});
 
 
