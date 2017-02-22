@@ -1,22 +1,15 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 var PORT = process.env.PORT || 3000
-var todos = [{
-	id: 1,
-	description : 'Meet mom for Lunch',
-	completed : false
-}, {
-	id: 2, 
-	description : 'go to market',
-	completed: false
-}, {
-	id: 3,
-	description: 'feed Gizmo',
-	completed: false
-}];
+var todos = [];
+var todoNextID = 1;
+
+//will parse POST request into JSON format
+app.use(bodyParser.json());
 
 app.get('/', function (req, res){
-	res.send('Todo API Root')
+	res.send('Todo API Root');
 	});
 
 // GET /todo - HTTP Get Method / url /todo
@@ -43,6 +36,25 @@ app.get('/todo/:id', function (req, res) {
 		res.status(404).send();
 	}
 });
+
+//POST /todo - will show back in the terminal data passed via POST
+// app.post('/todo', function (req, res){
+// 	var body = req.body
+// 	console.log('description: ' + body.description);
+// 	res.json(body);
+// 	});
+
+//POST /todo
+app.post('/todo', function (req, res){
+	var body = req.body
+	//add ID field - set this to ID and add one each time
+	body.id = todoNextID++;
+
+	//push body into array
+	todos.push(body);
+	res.json(body);
+		
+	});
 
 
 app.listen(PORT, function(){
