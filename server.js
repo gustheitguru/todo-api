@@ -51,13 +51,15 @@ app.get('/todo/:id', function (req, res) {
 
 //POST /todo
 app.post('/todo', function (req, res){
-	var body = req.body
+	var body = _.pick(req.body, 'description', 'completed');
+	// var body = _.pick(req.body, 'description', 'completed');
 	
 	if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
 		return res.status(400).send();
 	}
 
-	
+	body.description = body.description.trim();
+
 	//add ID field - set this to ID and add one each time
 	body.id = todoNextID++;
 
