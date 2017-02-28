@@ -10,18 +10,26 @@ var todoNextID = 1;
 //will parse POST request into JSON format
 app.use(bodyParser.json());
 
-app.get('/', function (req, res){
+app.get('/', function (req, res) {
 	res.send('Todo API Root');
-	});
+});
 
 // GET /todo - HTTP Get Method / url /todo
+// GET /todos?completed=true
+app.get('/todo', function (req, res) {
+	var queryParams = req.query;
+	var filteredTodos = todos;
 
-app.get('/todo', function (req, res){
-	res.json(todos);
-	});
+	if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
+		filteredTodos = _.where(filteredTodos, {completed: true});
+	} else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
+		filteredTodos = _.where(filteredTodos, {completed: false});
+	}
 
-// Get /todo/:id
+	res.json(filteredTodos);
+});
 
+// GET /todos/:id
 app.get('/todo/:id', function (req, res) {
 	var todoId = parseInt(req.params.id, 10);
 
