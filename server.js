@@ -45,23 +45,32 @@ app.get('/todo', function(req, res) {
 app.get('/todo/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
 
-	var matchedTodo = _.findWhere(todos, {
-		id: todoId
+	db.todo.findById(todoId).then(function(todo) {
+		if(!!todo) {
+			res.json(todo.toJSON());
+		} else {
+			res.status(404).send();
+		}
+	}, function (e) {
+		res.status(500).send();
 	});
-	//this code down here does the same thing as the line above
-	// var matchedTodo;
-
-	// todos.forEach(function (todo) {
-	// 	if (todoId === todo.id) {
-	// 		matchedTodo = todo;
-	// 	}
+	// var matchedTodo = _.findWhere(todos, {
+	// 	id: todoId
 	// });
+	// //this code down here does the same thing as the line above
+	// // var matchedTodo;
 
-	if (matchedTodo) {
-		res.json(matchedTodo);
-	} else {
-		res.status(404).send();
-	}
+	// // todos.forEach(function (todo) {
+	// // 	if (todoId === todo.id) {
+	// // 		matchedTodo = todo;
+	// // 	}
+	// // });
+
+	// if (matchedTodo) {
+	// 	res.json(matchedTodo);
+	// } else {
+	// 	res.status(404).send();
+	// }
 });
 
 //POST /todo - will show back in the terminal data passed via POST
