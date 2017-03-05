@@ -32,11 +32,13 @@ app.get('/todo', function(req, res) {
 			$like: '%' + query.q + '%'
 		};
 	}
-	
 
-	db.todo.findAll({where: where}).then(function (todos) {
+
+	db.todo.findAll({
+		where: where
+	}).then(function(todos) {
 		res.json(todos);
-	}, function (e) {
+	}, function(e) {
 		res.status(500).send();
 	});
 
@@ -69,12 +71,12 @@ app.get('/todo/:id', function(req, res) {
 	var todoId = parseInt(req.params.id, 10);
 
 	db.todo.findById(todoId).then(function(todo) {
-		if(!!todo) {
+		if (!!todo) {
 			res.json(todo.toJSON());
 		} else {
 			res.status(404).send();
 		}
-	}, function (e) {
+	}, function(e) {
 		res.status(500).send();
 	});
 
@@ -132,37 +134,39 @@ app.post('/todo', function(req, res) {
 });
 
 //Delete /todo/:id
-app.delete('/todo/:id', function(req, res) {
+app.delete('/todo/:id', function (req, res) {
 	var todoId = parseInt(req.params.id, 10);
-	var matchedTodo = _.findWhere(todos, {
-		id: todoId
-	});
 
-
-	if (!matchedTodo) {
-		res.status(404).json({
-			"Not Found": "object not found"
-		});
-	} else {
-		todos = _.without(todos, matchedTodo);
-		res.json(matchedTodo);
-	}
+	db.todo.destroy({
+		where: {
+			id: todoId
+		}
+	}).then(function (rowsDeleted) {
+		if (rowsDeleted === 0) {
+			res.status(404).json({
+				error: 'no to do with that ID'
+			});
+		} else {
+			res.status(204).send();
+		};
+	})
 });
-app.delete('/todos/:id', function(req, res) {
-	var todoId = parseInt(req.params.id, 10);
-	var matchedTodo = _.findWhere(todos, {
-		id: todoId
-	});
 
-	if (!matchedTodo) {
-		res.status(404).json({
-			"error": "no todo found with that id"
-		});
-	} else {
-		todos = _.without(todos, matchedTodo);
-		res.json(matchedTodo);
-	}
-});
+// app.delete('/todos/:id', function(req, res) {
+// 	var todoId = parseInt(req.params.id, 10);
+// 	var matchedTodo = _.findWhere(todos, {
+// 		id: todoId
+// 	});
+
+// 	if (!matchedTodo) {
+// 		res.status(404).json({
+// 			"error": "no todo found with that id"
+// 		});
+// 	} else {
+// 		todos = _.without(todos, matchedTodo);
+// 		res.json(matchedTodo);
+// 	}
+// });
 
 //PUT /todo/:id
 app.put('/todo/:id', function(req, res) {
@@ -198,8 +202,3 @@ db.sequelize.sync().then(function() {
 		console.log('Express Listening on port ' + PORT + '!');
 	});
 });
-
-
-
-
-
