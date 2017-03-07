@@ -184,16 +184,16 @@ app.put('/todo/:id', function(req, res) {
 
 	db.todo.findById(todoId).then(function(todo) {
 		if (todo) {
-			return todo.update(attributes);
+			todo.update(attributes).then(function(todo) {
+				res.json(todo.toJSON());
+			}, function(e) {
+				res.status(400).json(e);
+			});
 		} else {
 			res.status(404).send();
 		}
-	}, function (){
+	}, function() {
 		res.status(500).send();
-	}).then(function (todo) {
-		res.json(todo.toJSON());
-	}, function(e) {
-		res.status(400).send(e);
 	});
 
 
@@ -220,6 +220,20 @@ app.put('/todo/:id', function(req, res) {
 	// res.json(matchedTodo);
 
 });
+
+
+app.post('/user', function(req, res) {
+	var body = _.pick(req.body, 'email', 'password');
+
+	db.user.create(body).then(function(user) {
+		res.json(user.toJSON());
+	}, function(e) {
+		res.status(400).json(e);
+	});
+
+});
+
+
 
 db.sequelize.sync().then(function() {
 	app.listen(PORT, function() {
