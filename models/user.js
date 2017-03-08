@@ -1,22 +1,22 @@
-module.exports = function (sequelize, DataType) {
+module.exports = function (sequelize, DataTypes) {
 	return sequelize.define('user', {
 		email: {
-			type: DataType.STRING,
+			type: DataTypes.STRING,
 			allowNull: false,
 			unique: true,
-			Validate: {
+			validate: {
 				isEmail: true
 			}
 		},
 		password: {
-			type: DataType.STRING,
+			type: DataTypes.STRING,
 			allowNull: false,
-			Validate: {
+			validate: {
 				len: [7, 100]
 			}
 		}
 	}, {
-		hook: {
+		hooks: {
 			beforeValidate: function (user, options) {
 
 				if (typeof user.email === 'string') {

@@ -222,15 +222,14 @@ app.put('/todo/:id', function(req, res) {
 });
 
 
-app.post('/user', function(req, res) {
+app.post('/users', function (req, res) {
 	var body = _.pick(req.body, 'email', 'password');
 
-	db.user.create(body).then(function(user) {
+	db.user.create(body).then(function (user) {
 		res.json(user.toJSON());
-	}, function(e) {
+	}, function (e) {
 		res.status(400).json(e);
 	});
-
 });
 
 
